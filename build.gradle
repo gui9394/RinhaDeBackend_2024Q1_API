@@ -39,5 +39,5 @@ tasks.named('test') {
 }
 
 bootBuildImage {
-	imageName = 'rinha-de-backend-2024-q1'
+	imageName = 'gui9394/rinha-de-backend-2024-q1'
 }
