@@ -1,0 +1,8 @@
+server:
+  port: 9999
+
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://${POSTGRES_HOST:'localhost:5432'}/${POSTGRES_DB:rinha}
+    username: ${POSTGRES_USER:rinha}
+    password: ${POSTGRES_PASSWORD:rinha}
