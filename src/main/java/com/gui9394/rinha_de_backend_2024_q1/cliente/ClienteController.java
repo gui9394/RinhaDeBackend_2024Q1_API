@@ -1,9 +1,10 @@
 package com.gui9394.rinha_de_backend_2024_q1.cliente;
 
-import com.gui9394.rinha_de_backend_2024_q1.extrato.Extrato;
-import com.gui9394.rinha_de_backend_2024_q1.extrato.ExtratoService;
-import com.gui9394.rinha_de_backend_2024_q1.transacao.NovaTransacao;
-import com.gui9394.rinha_de_backend_2024_q1.transacao.TransacaoService;
+import com.gui9394.rinha_de_backend_2024_q1.cliente.extrato.Extrato;
+import com.gui9394.rinha_de_backend_2024_q1.cliente.extrato.ExtratoService;
+import com.gui9394.rinha_de_backend_2024_q1.cliente.transacao.TransacaoNovaResultado;
+import com.gui9394.rinha_de_backend_2024_q1.cliente.transacao.TransacaoNova;
+import com.gui9394.rinha_de_backend_2024_q1.cliente.transacao.TransacaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -35,17 +36,17 @@ public class ClienteController {
     }
 
     @PostMapping(path = "/{clienteId}/transacoes")
-    public Mono<ClienteBalance> newTransaction(
+    public Mono<TransacaoNovaResultado> newTransaction(
 
             @PathVariable
             Long clienteId,
 
             @Valid
             @RequestBody
-            NovaTransacao novaTransacao
+            TransacaoNova transacaoNova
 
     ) {
-        return transacaoService.novaTransacao(clienteId, novaTransacao);
+        return transacaoService.nova(clienteId, transacaoNova);
     }
 
 }

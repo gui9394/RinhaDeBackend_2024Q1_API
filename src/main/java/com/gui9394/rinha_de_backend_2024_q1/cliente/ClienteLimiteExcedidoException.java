@@ -5,8 +5,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class ClienteLimiteExcedidoException extends ResponseStatusException {
 
-    public ClienteLimiteExcedidoException() {
-        super(HttpStatus.UNPROCESSABLE_ENTITY, "Limite superior ao disponivel");
+    public ClienteLimiteExcedidoException(Long id, Long limite, Long saldo) {
+        super(
+                HttpStatus.UNPROCESSABLE_ENTITY,
+                "Saldo " + saldo + " superior ao limite " + limite + " do cliente " + id
+        );
     }
 
 }

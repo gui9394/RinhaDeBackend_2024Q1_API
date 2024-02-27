@@ -1,6 +1,6 @@
-package com.gui9394.rinha_de_backend_2024_q1.extrato;
+package com.gui9394.rinha_de_backend_2024_q1.cliente.extrato;
 
-import com.gui9394.rinha_de_backend_2024_q1.transacao.TipoTransacao;
+import com.gui9394.rinha_de_backend_2024_q1.cliente.transacao.TransacaoTipo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.r2dbc.core.DatabaseClient;
 import org.springframework.stereotype.Repository;
@@ -30,7 +30,7 @@ public class ExtratoRepository {
                 realizada_em
             FROM transacao
             WHERE cliente_id = :clienteId
-            ORDER BY realizada_em DESC
+            ORDER BY id DESC
             LIMIT 10
             """;
 
@@ -54,11 +54,11 @@ public class ExtratoRepository {
                 .bind("clienteId", clienteId)
                 .fetch()
                 .all()
-                .map(values -> new ExtratoTransacao(
-                        (Long) values.get("valor"),
-                        TipoTransacao.valueOf((String) values.get("tipo")),
-                        (String) values.get("descricao"),
-                        ((OffsetDateTime) values.get("realizada_em")).toInstant()
+                .map(resultado -> new ExtratoTransacao(
+                        (Long) resultado.get("valor"),
+                        TransacaoTipo.valueOf((String) resultado.get("tipo")),
+                        (String) resultado.get("descricao"),
+                        ((OffsetDateTime) resultado.get("realizada_em")).toInstant()
                 ))
                 .collectList();
     }

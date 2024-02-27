@@ -5,8 +5,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 public class ClienteNaoEncontradoException extends ResponseStatusException {
 
-    public ClienteNaoEncontradoException() {
-        super(HttpStatus.NOT_FOUND, "Cliente não encontrado");
+    public ClienteNaoEncontradoException(Long id) {
+        super(HttpStatus.NOT_FOUND, "Cliente " + id + " não encontrado");
     }
 
 }

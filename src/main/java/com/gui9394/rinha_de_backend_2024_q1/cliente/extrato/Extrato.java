@@ -1,4 +1,4 @@
-package com.gui9394.rinha_de_backend_2024_q1.extrato;
+package com.gui9394.rinha_de_backend_2024_q1.cliente.extrato;
 
 import java.util.List;
 
