@@ -1,3 +1,7 @@
+logging:
+  pattern:
+    console: "%d{ISO8601} type=%highlight(%level) thread=%magenta(%thread) class=%cyan(%class{0}) method=%green(%method) line=%yellow(%line) %m%n%xThrowable"
+
 server:
   port: 9999
 
