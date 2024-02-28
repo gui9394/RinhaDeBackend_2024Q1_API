@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'gui9394'
-version = '0.0.1'
+version = '1.0.0'
 
 java {
 	sourceCompatibility = '21'
@@ -39,6 +39,5 @@ tasks.named('test') {
 }
 
 bootBuildImage {
-	imageName = 'gui9394/rinha-de-backend-2024-q1'
-	tags = [ version ]
+	imageName = "gui9394/rinha-de-backend-2024-q1:${version}"
 }
