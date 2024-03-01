@@ -1,24 +1,25 @@
 CREATE TABLE cliente (
-	id        BIGINT NOT NULL,
-	limite    BIGINT DEFAULT 0 NOT NULL,
-	saldo     BIGINT NOT NULL,
-	PRIMARY KEY (id)
+	id                           BIGINT                    NOT NULL,
+	limite                       BIGINT      DEFAULT 0     NOT NULL,
+	saldo                        BIGINT                    NOT NULL,
+	CONSTRAINT cliente_pk        PRIMARY KEY (id),
+	CONSTRAINT cliente_limite_ck CHECK       ((saldo + limite) > -1)
 );
 
 CREATE TABLE transacao (
-	id                  BIGINT GENERATED ALWAYS AS identity,
-	valor               BIGINT NOT NULL,
-	tipo                VARCHAR(10) NOT NULL,
-	descricao           VARCHAR(10) NOT NULL,
-	realizada_em        TIMESTAMPTZ DEFAULT NOW() NOT NULL,
-	cliente_id          BIGINT NOT NULL,
-    PRIMARY KEY (id),
-    CONSTRAINT fk_cliente FOREIGN KEY (cliente_id) REFERENCES cliente(id)
+	id                           BIGINT      GENERATED ALWAYS AS IDENTITY,
+	valor                        BIGINT                    NOT NULL,
+	tipo                         VARCHAR(10)               NOT NULL,
+	descricao                    VARCHAR(10)               NOT NULL,
+	realizada_em                 TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+	cliente_id                   BIGINT                    NOT NULL,
+    CONSTRAINT transacao_pk      PRIMARY KEY (id),
+    CONSTRAINT cliente_fk        FOREIGN KEY (cliente_id) REFERENCES cliente(id)
 );
 
 CREATE INDEX CONCURRENTLY idx_transacao_01 ON transacao (
     cliente_id,
-    id DESC
+    id         DESC
 );
 
 CREATE OR REPLACE PROCEDURE nova_transacao (
@@ -33,37 +34,27 @@ CREATE OR REPLACE PROCEDURE nova_transacao (
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    SELECT
-		(
-	        CASE transacao_tipo
-	        WHEN 'DEBIT'  THEN saldo - transacao_valor
-	        WHEN 'CREDIT' THEN saldo + transacao_valor
-	        END
-	    ),
-		limite
-	INTO
-        cliente_saldo,
-        cliente_limite
-    FROM cliente
+    UPDATE cliente
+    SET saldo = (
+        CASE transacao_tipo
+        WHEN 'DEBIT'  THEN saldo - transacao_valor
+        WHEN 'CREDIT' THEN saldo + transacao_valor
+        END
+    )
     WHERE id = cliente_id
-    FOR UPDATE;
+    RETURNING
+        saldo,
+        limite
+    INTO
+        cliente_saldo,
+        cliente_limite;
 
-	IF cliente_saldo IS NULL OR cliente_limite IS NULL THEN
+	IF NOT FOUND THEN
 		resultado := 'CLIENTE_NAO_ENCONTRADO';
 		RETURN;
     END IF;
 
-	IF (cliente_saldo + cliente_limite) < 0 THEN
-		resultado := 'CLIENTE_LIMITE_EXCEDIDO';
-		RETURN;
-	END IF;
-
 	resultado := 'SUCESSO';
-
-    UPDATE cliente
-    SET saldo = cliente_saldo
-    WHERE id = cliente_id;
-
     INSERT INTO transacao (
         tipo,
         valor,
@@ -76,6 +67,10 @@ BEGIN
         transacao_descricao,
         cliente_id
     );
+
+    EXCEPTION
+        WHEN SQLSTATE '23514' THEN
+            resultado := 'CLIENTE_LIMITE_EXCEDIDO';
 END;
 $$;
 
